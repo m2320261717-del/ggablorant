@@ -1,0 +1,44 @@
+{
+ "N": {
+  "equip": 48,
+  "idle": 59,
+  "inspect": 126,
+  "a1": 48,
+  "a2": 42,
+  "stab": 60
+ },
+ "OFF": {
+  "omen": {
+   "equip": 14,
+   "idle": 263,
+   "inspect": 329,
+   "a1": 100,
+   "a2": 105,
+   "stab": 164
+  },
+  "sage": {
+   "equip": 14,
+   "idle": 263,
+   "inspect": 328,
+   "a1": 100,
+   "a2": 105,
+   "stab": 164
+  },
+  "sova": {
+   "equip": 14,
+   "idle": 263,
+   "inspect": 323,
+   "a1": 100,
+   "a2": 105,
+   "stab": 164
+  },
+  "jett": {
+   "equip": 14,
+   "idle": 263,
+   "inspect": 327,
+   "a1": 100,
+   "a2": 105,
+   "stab": 164
+  }
+ }
+}
