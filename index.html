@@ -2148,7 +2148,7 @@ function loop(){
     w.g.visible=false;window.__specB=w;const wk=(w.w&&NAMES[w.w])?w.w:'classic',sk0=window.SKIN;window.SKIN='default';const sg=gunGeo(wk);window.SKIN=sk0;
     gun.geometry=sg;gun.material=sg.userData.mats||MATV;gun.visible=true;window.SPECV&&SPECV(w,performance.now()/1000)}}
    if(window.CW)CW.u(performance.now()/1000);if(window.THW)THW.u(performance.now()/1000);
-  const sp=(!P.ground?.05:Math.hypot(P.vel.x,P.vel.z)>3.5?cur.d.mv:0)+Math.min(shotIdx,8)*.002,CRG=!!((keys.ControlLeft||keys.ControlRight||keys.KeyZ)&&P.ground&&Math.hypot(P.vel.x,P.vel.z)<.6),gap=4+(sp*(CRG?.7:1)+(CRG?.002:(P.ground?.010:0)))*500;
+  const _xe=(t-lastShot>.3)?0:shotIdx,_xa=(cur.d.ads&&drag)?.6:1,sp=(!P.ground?.05:Math.hypot(P.vel.x,P.vel.z)>3.5?cur.d.mv:0)+Math.min(_xe,8)*.002+((_xe>=1&&cur.d.sprd2!=null?cur.d.sprd2:cur.d.sprd)||0)+(cur.d.scope&&!drag?.08:0),CRG=!!((keys.ControlLeft||keys.ControlRight||keys.KeyZ)&&P.ground&&Math.hypot(P.vel.x,P.vel.z)<.6),gap=4+(sp*(CRG?.7:1)*_xa+(CRG?.002:(P.ground?.010:0))*_xa)*(innerHeight/2/Math.tan(camera.fov*Math.PI/360));
   $('cT').style.top=`calc(50% - ${gap+8}px)`;$('cB').style.top=`calc(50% + ${gap}px)`;
   $('cL').style.left=`calc(50% - ${gap+8}px)`;$('cR').style.left=`calc(50% + ${gap}px)`;
   if(playing){bots.forEach(b=>b.update(dt,t));roundTick(dt);abilTick(dt)}
@@ -6314,7 +6314,7 @@ let egMin=1e9;
 function xhLoop(){
   requestAnimationFrame(xhLoop);
   const cT=$('cT');let sp=0;
-  if(cT){const m=/calc\(50% - ([\d.]+)px\)/.exec(cT.style.top||'');if(m){const eg=+m[1]-8;if(eg<egMin)egMin=eg;sp=Math.max(0,eg-egMin)}}
+  if(cT){const m=/calc\(50% - ([\d.]+)px\)/.exec(cT.style.top||'');if(m){const eg=+m[1]-8;sp=Math.max(0,eg-4)}}
   const xs=$('xs'),cross=!xs||xs.value==='x';
   XH.style.display=cross?'block':'none';
   if(cross)paintXH(XH,sp);
