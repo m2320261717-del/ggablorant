@@ -7735,6 +7735,9 @@ function play(o,name,rate,loop,after){const v=o.clips[name]||(o.ads&&name.slice(
   v.onended=()=>{if(S.vid===v){S.vid=null;if(after){after();return}S.state='idle';const ph=o.d.phase&&o.d.phase[name];if(o.clips.idle&&ph!=null){try{o.clips.idle.currentTime=ph}catch(e){}}show(o,'idle')}};return true}
 function hideAll(o){o.idle.style.display='none';if(o.ads){o.ads.idle.style.display='none';for(const k in o.ads.clips){o.ads.clips[k].style.display='none';try{o.ads.clips[k].pause()}catch(e){}}}for(const k in o.clips){o.clips[k].style.display='none';if(k!=='idle'||true){try{o.clips[k].pause()}catch(e){}}}}
 function stop(o){if(S.vid){try{S.vid.pause()}catch(e){}S.vid=null}S.state='idle';S.ads=0;show(o,'idle')}
+// 발사 영상 1개에 같은 동작이 여러 번 들어 있는 무기: 1발분 길이(초)에서 끊기 (안 끊으면 총이 3~4번 위아래로 떨림)
+const FCW={marshal:.64,shorty:.55,guardian:.3,bandit:.34,ghost:.33,operator:.95,sheriff:.36};
+function fcOf(k,o){const c=FCW[k];if(!c)return 0;const d=(o.d&&o.d.fire)||0;return d>c+.15?c:0}
 function update(){
   const ag=P.ag;
   if(!ag||!cur||!P.alive||!playing)return false;
@@ -7746,7 +7749,7 @@ function update(){
   if(!gun.visible)return false;                                                  // 스코프/스킬 장착 중에는 기존 처리 그대로
   const t=performance.now()/1000;
   if(S.cur&&S.cur!==o){hideAll(S.cur);S.vid=null;S.state='idle'}
-  if(S.ag!==ag||S.k!==w||S.cur!==o){S.ag=ag;S.k=w;S.cur=o;S.ins=false;S.shot=lastShot;S.rl=RL.t0;S.ml=ML.n;stop(o);if(o.clips.equip)play(o,'equip',Math.max(1,(o.d.equip||1)/1.4))}
+  if(S.ag!==ag||S.k!==w||S.cur!==o){S.ag=ag;S.k=w;S.cur=o;S.ins=false;S.shot=lastShot;S.rl=RL.t0;S.ml=ML.n;stop(o);if(o.clips.equip)play(o,'equip',cur.k==='operator'?1:Math.max(1,(o.d.equip||1)/1.4))}
   if(melee){
     // 칼 공격: 연속으로 휘두르면 공격 영상이 차례대로(1~5), 찌르기(우클릭)는 별도 영상
     if(ML.n!==S.ml){S.ml=ML.n;if(ML.kind){let k;
@@ -7785,12 +7788,12 @@ function update(){
       else if(S.state==='adsfire'&&S.vid)S.vid.playbackRate=want}
     else if(window.__altShot&&o.clips.altfire&&cur.k==='classic'){play(o,'altfire',1,false)}
     else if(o.clips.fire){
-      const base=(o.d.fire||.3),want=clamp(base/Math.max(.05,Math.min(iv,1/Math.max(1,(cur.d.rate||4)))),.7,3);
-      if(S.state==='idle')play(o,'fire',cur.k==='marshal'?1:clamp(base*(cur.d.rate||4),.7,3),cur.k!=='marshal');
+      const fcw=o.d.fireCut||fcOf(cur.k,o),base=(fcw||o.d.fire||.3),want=clamp(base/Math.max(.05,Math.min(iv,1/Math.max(1,(cur.d.rate||4)))),.7,3);
+      if(S.state==='idle')play(o,'fire',clamp(base*(cur.d.rate||4),.7,3),!fcw);
       else if(S.state==='fire'&&S.vid)S.vid.playbackRate=want}
     else if(S.state==='idle')S.rc=Math.min(1.25,S.rc+.8)}      // 발사 영상 없을 때만 임시 반동
   if((S.state==='fire'||S.state==='adsfire')&&S.vid&&t>S.until)S.vid.loop=false;
-  if(S.state==='fire'&&S.vid){const fc=o.d.fireCut||((cur.k==='marshal'&&S.vid.duration>1.2)?.64:0);if(fc&&S.vid.currentTime>=fc-.03)stop(o)}   // 영상에 여러 발이 들어 있으면 한 발 분량에서 끊기
+  if(S.state==='fire'&&S.vid){const fc=o.d.fireCut||fcOf(cur.k,o);if(fc&&S.vid.currentTime>=fc-.02)stop(o)}   // 영상에 여러 발이 들어 있으면 한 발 분량에서 끊기
   // 걸음 흔들림 / 정조준 시 가운데로 이동 (발사 영상이 있으면 게임 반동값은 쓰지 않음)
   const hb=clamp((window.__gbx??.22)/.22,0,1),sp=Math.hypot(P.vel.x,P.vel.z),W=innerWidth,Hh=innerHeight,bw=Hh*16/9;
   const ax=(melee||o.ads)?0:-(1-hb)*.25*bw*.7;
