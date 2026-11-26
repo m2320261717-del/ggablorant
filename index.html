@@ -7786,11 +7786,11 @@ function update(){
     else if(window.__altShot&&o.clips.altfire&&cur.k==='classic'){play(o,'altfire',1,false)}
     else if(o.clips.fire){
       const base=(o.d.fire||.3),want=clamp(base/Math.max(.05,Math.min(iv,1/Math.max(1,(cur.d.rate||4)))),.7,3);
-      if(S.state==='idle')play(o,'fire',clamp(base*(cur.d.rate||4),.7,3),true);
+      if(S.state==='idle')play(o,'fire',cur.k==='marshal'?1:clamp(base*(cur.d.rate||4),.7,3),cur.k!=='marshal');
       else if(S.state==='fire'&&S.vid)S.vid.playbackRate=want}
     else if(S.state==='idle')S.rc=Math.min(1.25,S.rc+.8)}      // 발사 영상 없을 때만 임시 반동
   if((S.state==='fire'||S.state==='adsfire')&&S.vid&&t>S.until)S.vid.loop=false;
-  if(S.state==='fire'&&S.vid&&o.d.fireCut&&S.vid.currentTime>=o.d.fireCut)stop(o);   // 영상에 여러 발이 들어 있으면 한 발 분량에서 끊기
+  if(S.state==='fire'&&S.vid){const fc=o.d.fireCut||((cur.k==='marshal'&&S.vid.duration>1.2)?.64:0);if(fc&&S.vid.currentTime>=fc-.03)stop(o)}   // 영상에 여러 발이 들어 있으면 한 발 분량에서 끊기
   // 걸음 흔들림 / 정조준 시 가운데로 이동 (발사 영상이 있으면 게임 반동값은 쓰지 않음)
   const hb=clamp((window.__gbx??.22)/.22,0,1),sp=Math.hypot(P.vel.x,P.vel.z),W=innerWidth,Hh=innerHeight,bw=Hh*16/9;
   const ax=(melee||o.ads)?0:-(1-hb)*.25*bw*.7;
